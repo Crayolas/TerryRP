@@ -78,8 +78,13 @@ namespace Roleplay{
         }
         
         public static void DeleteTag(Citizen citi){
+            if(citi != null){
+            if(nametags.ContainsKey(citi)){
             nametags[citi].Delete(false);
             nametags.Remove(citi);
+
+            }
+            }
         }
         public void updatenametags(Citizen citi){
             //nearbyplayers = nearbypl;
@@ -90,7 +95,10 @@ namespace Roleplay{
         public override void Tick(){
 
             base.Tick();
-
+                if(!citizen.IsValid()){
+                Delete();
+                return;
+             }
             var isidentified = false;
            var tagoffset = new Vector3(0f, 0,65f);
             
@@ -178,7 +186,7 @@ namespace Roleplay{
                 identifyingtext = 0;
 
             }
-
+            
             }
 
 
