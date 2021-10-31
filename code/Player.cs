@@ -29,6 +29,10 @@ namespace Roleplay
 			idlist = new identificationlist(this);
 
 		}
+		protected override void OnDestroy(){
+			base.OnDestroy();
+			RemoveNameTag(To.Everyone,this);
+		}
 
 		public static List<Citizen> AllCitizens{get; set;} = new List<Citizen>();
 		public List<Citizen> tagsvisible{get;set;} = new List<Citizen>();
@@ -109,6 +113,7 @@ namespace Roleplay
 
 		}
 		
+
 	
 		[ClientRpc]
 				public void RemoveNameTag(Citizen citi){
