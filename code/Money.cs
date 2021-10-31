@@ -4,7 +4,7 @@ namespace Roleplay{
     
     public partial class Citizen
     {
-        public static int paycheckinterval = 10;
+        public static int paycheckinterval = 30;
         public static long circulation = 0;
         public static TimeSince timesincepay = 0;
 
@@ -35,6 +35,7 @@ namespace Roleplay{
         }
         public int sendPaycheck(){
             addMoney(paycheck);
+            Notify(To.Single(this), "You have received a welfare check of $"+paycheck+".","money");
             return paycheck;
         }
         public bool transferMoney(Citizen receiver, int transferAmount){

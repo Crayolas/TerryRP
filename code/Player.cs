@@ -31,7 +31,7 @@ namespace Roleplay
 		}
 		protected override void OnDestroy(){
 			base.OnDestroy();
-			RemoveNameTag(To.Everyone,this);
+			AllCitizens.Remove(this);
 		}
 
 		public static List<Citizen> AllCitizens{get; set;} = new List<Citizen>();
