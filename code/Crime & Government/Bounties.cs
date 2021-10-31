@@ -12,7 +12,7 @@ namespace Roleplay{
 
         public void SetBounty(){
             bounty = manslaughters * manslaughter_charge;
-            Notify(To.Everyone,(Client.Name + " now has a $"+ bounty + " bounty. Kill them to restore justice to this world and redeem the bounty."), "blahblah", 50);
+            Notify(To.Everyone,(Name + " now has a $"+ bounty + " bounty. Kill them to restore justice to this world and redeem the bounty."), "blahblah", 50);
 
         }
         public void AddCharge(string str, int amount = 1){
