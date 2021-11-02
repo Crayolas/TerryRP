@@ -6,11 +6,13 @@ namespace Roleplay{
         
         public static CharacterSelectPage current;
         public static bool oncharacterselect = false;
-        public static List<Citizen> characterslist = new List<Citizen>();
-        public static List<characterpanel> characterpanels = new List<characterpanel>();
+        public static List<Citizen> characterslist;
+        public static List<characterpanel> characterpanels;
         public static newcharacter ncpanel;
         public CharacterSelectPage(){
             current = this;
+            characterpanels = new List<characterpanel>();
+            characterslist = new List<Citizen>();
             SetTemplate("/hud/characterselect.html");
             AddChild(new Panel(){ElementName = "pattern"});
             AddChild(new Panel(){ElementName = "sboxlogo"});
@@ -23,11 +25,12 @@ namespace Roleplay{
 
         }
         public static void updatecharacterlist(Citizen character){
+        
+            
                 bool newcitizen = true;
                 bool newpanel = true;
            
             foreach(Citizen ci in characterslist){
-             
 
                 if(ci.characterid == character.characterid){
                     newcitizen = false;
@@ -39,16 +42,18 @@ namespace Roleplay{
 
                     AddCharacter(character);
                     
-                }
+                
+            }
+            
 
-
+            
         }
         public static void AddCharacter(Citizen ci){
             characterpanel cpan = new characterpanel(ci.characterid, ci.Name, ci.balance);
             characterpanels.Add(cpan);
             current.AddChild(cpan);
             characterslist.Add(ci);
-            Log.Info("Character added");
+           
             
         }
         public static void mouseover(){
@@ -104,6 +109,7 @@ namespace Roleplay{
         public void selectcharacter(){
             RoleplayGame.SelectCharacter(characterid);
             
+            Sound.FromScreen("characterselect");
         }
 
     }
@@ -130,6 +136,7 @@ namespace Roleplay{
             if(CharacterSelectPage.characterslist.Count<=3){
             base.OnMouseOver(e);
             CreateEvent("hover");
+
             }
         }
         protected override void OnMouseOut(MousePanelEvent e){
@@ -145,6 +152,7 @@ namespace Roleplay{
             if(CharacterSelectPage.characterslist.Count<=3){
             if(!incharacterselect && doubleclickprevent>0){
             addicon.Delete();
+            Sound.FromScreen("click");
             ncf = new newcharacterform();
             AddChild(ncf);
             SetClass("focused", true);
@@ -156,6 +164,7 @@ namespace Roleplay{
         public void mouseover(){
             if(CharacterSelectPage.characterslist.Count<=3){
             if(!incharacterselect){
+                
             addicon.SetClass("buttonhovered", true);
             }else{
                 Switch(PseudoClass.Hover, false);
@@ -216,9 +225,10 @@ namespace Roleplay{
                  }
              }
             public void createcharacter(){
+                if(ready == true){
                     RoleplayGame.CreateCharacter(firstname.Text, lastname.Text);
-                    
-                    
+                    Sound.FromScreen("click");
+                    Sound.FromScreen("notification");
                     CharacterSelectPage.ncpanel.SetClass("focused", false);
                     CharacterSelectPage.ncpanel.Switch(PseudoClass.Hover, true);
                     CharacterSelectPage.ncpanel.doubleclickprevent = 0;
@@ -228,7 +238,7 @@ namespace Roleplay{
                     
                     Delete();
                     
-                    
+                }
   
 
                     

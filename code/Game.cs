@@ -25,13 +25,18 @@ namespace Roleplay
 	/// You can use this to create things like HUDs and declare which player class
 	/// to use for spawned players.
 	/// </summary>
+	public class OrgData{
+
+		public List<Org> AllOrgs;
+	}
 	public class Serverdata{
 		public int currentcharacterid {get; set;} = 1;
+		public int currentorgid {get; set;}=1;
 
 	}
 	public class Characterdata{
 		public int balance {get; set;}
-		public String Name {get; set;}
+		public string Name {get; set;}
 		public int characterid {get; set;}
 	}
 	public class Playerdata{
@@ -75,6 +80,9 @@ namespace Roleplay
 					if(!FileSystem.Data.FileExists("terryrpdata/serverdata/serverdata.json")){
 						FileSystem.Data.WriteJson<Serverdata>("terryrpdata/serverdata/serverdata.json", new Serverdata());
 					}
+					if(serverdata.FileExists("terryrpdata/serverdata/organizations.json")){
+						Org.AllOrgs = serverdata.ReadJson<OrgData>("terryrpdata/serverdata/organizations.json").AllOrgs;
+					}
 				}
 
 			}
@@ -109,11 +117,16 @@ namespace Roleplay
 			LoadPlayerData(client);
 
 		}
+		[ClientRpc]
+		public void gotologoutscreen(int timetologout){
 
+		}
 		[ClientRpc]
 		public void gotocharacterselect(){
 			if(CharacterSelectPage.oncharacterselect == false){
+			Local.Hud.DeleteChildren();
 			Local.Hud.AddChild<CharacterSelectPage>();
+			
 			}
 		}
 		[ClientRpc]
@@ -123,7 +136,11 @@ namespace Roleplay
 		}
 		[ClientRpc]
 		public void closecharacterselect(){
+			CharacterSelectPage.oncharacterselect = false;
+			
 			CharacterSelectPage.current.Delete();
+			
+	
 		}
 
 
@@ -242,6 +259,7 @@ namespace Roleplay
 					
 			
 								if(client.GetInt("currentcharacterid") == ci.characterid){
+							
 								Citizen player = temp;
 								client.Pawn = player;
 								player.Pawn = client.Pawn;
@@ -251,9 +269,13 @@ namespace Roleplay
 																
 								
 								
-								
 								}		
 					}
+							if (client.GetInt("currentcharacterid")!=0 && client.Pawn == null){
+							client.Kick();
+							
+						}
+					
 					}
 
 					
@@ -287,7 +309,7 @@ namespace Roleplay
 
 								gotocharacterselect(To.Single(cl));
 								foreach(Citizen ci in clientsave.Characters){
-			
+									
 								if(cl.GetInt("currentcharacterid") == ci.characterid){
 								Citizen player = ci;
 								cl.Pawn = player;
@@ -295,6 +317,8 @@ namespace Roleplay
 								closecharacterselect(To.Single(cl));
 								player.Respawn();
 								Citizen.NewCitizen(player);
+								
+								
 																
 								
 								
@@ -303,11 +327,15 @@ namespace Roleplay
 
 								updatecharacterlist(To.Single(cl),ci);
 								}
-					
+
+
 						}
+
 									}
+									
 						}
 						socket.OnMessageReceived -= onmessagereceive;
+						
 						}
 						 
 		/*
@@ -356,9 +384,17 @@ namespace Roleplay
 
 			}
 			*/
+
+
+						[ServerCmd]
+						public static void Logout(){
+							(ConsoleSystem.Caller.Pawn as Citizen).startlogout = true;
+							(Current as RoleplayGame).gotologoutscreen(To.Single(ConsoleSystem.Caller),Citizen.timetologout);
+						}
 							
 									[ServerCmd]
 						public async static void CreateCharacter(string firstname, string lastname){
+
 
 							(Current as RoleplayGame).UpdateInfo<Client,String>(ConsoleSystem.Caller, "newcharacter", firstname+ " "+lastname);
 
