@@ -128,6 +128,7 @@ namespace Roleplay
 			rpnametag.clidentifiedcitizens.Clear();
 			rpnametag.nametags.Clear();
 			rpnametag.nearbyplayers.Clear();
+			Notification.nt = new int[100];
 			Local.Hud.DeleteChildren();
 			Local.Hud.AddChild<CharacterSelectPage>();
 			
