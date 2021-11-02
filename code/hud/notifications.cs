@@ -4,7 +4,7 @@ namespace Roleplay{
 
 
     public class Notification : Panel{
-        static int[] nt = new int[100];
+        public static int[] nt = new int[100];
         int index = -1;
         bool islarge = false;
 
