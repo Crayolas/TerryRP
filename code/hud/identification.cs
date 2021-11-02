@@ -94,13 +94,19 @@ namespace Roleplay{
 
         public override void Tick(){
 
+
             base.Tick();
+                        if(!nametags.ContainsKey(citizen)){
+                Delete();
+                return;
+            }
                 if(!citizen.IsValid()){
                 Delete();
                 return;
              }
             var isidentified = false;
            var tagoffset = new Vector3(0f, 0,65f);
+           
             
             if (clidentifiedcitizens.Contains(citizen)){
                 isidentified=true;
