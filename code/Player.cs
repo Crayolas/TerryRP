@@ -17,7 +17,7 @@ namespace Roleplay
 		[Net, Local]
 		public int characterid {get; set;}
 		private TimeSince timesincelogout=0;
-		public static int timetologout = 1;
+		public static int timetologout = 10;
 		MenuBase menu;
 		Status status;
 		RPChat chat;
@@ -146,10 +146,12 @@ namespace Roleplay
 		}
 		[ClientRpc]
 		public void HideHud(){
+
 			if (status != null){
 			status.Delete();
 			status = null;
 			}
+			
 		}
 		/// <summary>
 		/// Called every tick, clientside and serverside.
