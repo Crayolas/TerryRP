@@ -221,6 +221,7 @@ namespace Roleplay
 						cl.Pawn = null;
 						cl.SetInt("currentcharacterid", 0);
 						(Game.Current as RoleplayGame).LoadPlayerData(cl);
+						Delete();
 						
 
 						
