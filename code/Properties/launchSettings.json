@@ -1,9 +1,0 @@
-{
-  "profiles": {
-    "RP test": {
-      "commandName": "Executable",
-      "executablePath": "D:\\SteamLibrary\\steamapps\\common\\sbox\\sbox.exe",
-      "commandLineArgs": "\u002Bdeveloper 1 -w 1920 -h 1080 -noassert -tools"
-    }
-  }
-}
