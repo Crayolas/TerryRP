@@ -119,7 +119,7 @@ namespace Roleplay
 		}
 		[ClientRpc]
 		public void gotologoutscreen(int timetologout){
-
+			Local.Hud.AddChild(new LogoutMenu(timetologout));
 		}
 		[ClientRpc]
 		public void gotocharacterselect(){

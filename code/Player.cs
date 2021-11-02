@@ -16,8 +16,13 @@ namespace Roleplay
 		//rpnametags nametags = null;
 		[Net, Local]
 		public int characterid {get; set;}
+		private TimeSince timesincelogout=0;
+		public static int timetologout = 10;
+		MenuBase menu;
 		Status status;
 		RPChat chat;
+		public bool startlogout = false;
+		
 		//rpnametags nametags = new rpnametags();
 
 		public Entity Pawn;
@@ -202,6 +207,23 @@ namespace Roleplay
 				tagsvisible = temp;
 				
 
+					if( !startlogout){
+						timesincelogout = 0;
+					}
+					
+					if(timesincelogout >= timetologout){
+						startlogout = false;
+						HideHud(To.Single(this));
+						AllCitizens.Remove(this);
+						cl.Pawn.Delete();
+						cl.Pawn = null;
+						cl.SetInt("currentcharacterid", 0);
+						(Game.Current as RoleplayGame).LoadPlayerData(cl);
+						
+
+						
+					}
+				
 			}
 
 	
@@ -211,7 +233,21 @@ namespace Roleplay
 			// simulate those too.
 			//
 			SimulateActiveChild( cl, ActiveChild );
-
+			if (IsClient && Input.Pressed(InputButton.Menu)){
+				if(menu == null){
+					menu = new MenuBase();
+					Local.Hud.AddChild(menu);
+				}
+			}
+			if(IsClient && Input.Released(InputButton.Menu)){
+				if (menu!=null){
+					if(menu.inmenu == false){
+					menu.DeleteChildren();
+					menu.Delete();
+					menu = null;
+					}
+				}
+			}
 			//
 			// If we're running serverside and Attack1 was just pressed, spawn a ragdoll
 			//
