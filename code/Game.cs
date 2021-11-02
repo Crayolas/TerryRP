@@ -124,6 +124,10 @@ namespace Roleplay
 		[ClientRpc]
 		public void gotocharacterselect(){
 			if(CharacterSelectPage.oncharacterselect == false){
+			rpnametag.cltimetillid.Clear();
+			rpnametag.clidentifiedcitizens.Clear();
+			rpnametag.nametags.Clear();
+			rpnametag.nearbyplayers.Clear();
 			Local.Hud.DeleteChildren();
 			Local.Hud.AddChild<CharacterSelectPage>();
 			
