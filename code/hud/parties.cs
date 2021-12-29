@@ -15,7 +15,7 @@ public class PartiesBase:Panel{
     
     public PartiesBase(){
 
-        Party p = (Local.Pawn as Citizen).party;
+        Party p =  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind];
         Log.Info(p+"haha");
         membertags = new();
         //party=p;
@@ -63,7 +63,7 @@ public class PartiesBase:Panel{
     public override void Tick(){
     
     base.Tick();
-
+        Log.Info((Local.Pawn as Citizen).partyind);
         if((Local.Pawn as Citizen).partydata.Item1 == partyicon.noparty){
         current = null;
         //party = null;
@@ -71,7 +71,7 @@ public class PartiesBase:Panel{
         return;
 
     }
-                if (Local.Pawn as Citizen == (Local.Pawn as Citizen).party.Leader){
+                if (Local.Pawn as Citizen ==  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].Leader){
         SetClass("visible", true);
             
         }else{
@@ -83,8 +83,8 @@ public class PartiesBase:Panel{
      SetClass("Qdown", false);
     }
 
-    partylabel.Text = "Party ("+(Local.Pawn as Citizen).party.members.Count+"/10)";
-    foreach(Citizen m in (Local.Pawn as Citizen).party.members){
+    partylabel.Text = "Party ("+((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].members.Count+"/10)";
+    foreach(Citizen m in ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].members){
       
         if(membertags.ContainsKey(m) == false && m != Local.Pawn as Citizen){
             PartyMember mem = new(m);
@@ -94,11 +94,11 @@ public class PartiesBase:Panel{
     }
     int index = 0;
     foreach(KeyValuePair<Citizen, PartyMember> kvpair in membertags){
-        if(!(Local.Pawn as Citizen).party.members.Contains(kvpair.Key)){
+        if(! ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].members.Contains(kvpair.Key)){
             kvpair.Value.Delete();
             membertags.Remove(kvpair.Key);
         }else{
-            if (kvpair.Key == (Local.Pawn as Citizen).party.Leader){
+            if (kvpair.Key ==  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].Leader){
                 kvpair.Value.SetClass("isleader", true);
             }else{
                 kvpair.Value.SetClass("isleader", false);
@@ -153,14 +153,14 @@ public class PartyMember:Panel{
 
     }
     public void KickPlayer(){
-        if((Local.Pawn as Citizen).party.Leader == Local.Pawn as Citizen){
+        if( ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].Leader == Local.Pawn as Citizen){
             RoleplayGame.party("kick", citizen.characterid);
             Sound.FromScreen("click");
             Sound.FromScreen("menuopen");
         }
     }
     public void PromotePlayer(){
-        if((Local.Pawn as Citizen).party.Leader == Local.Pawn as Citizen){
+        if( ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].Leader == Local.Pawn as Citizen){
             Sound.FromScreen("click");
             RoleplayGame.party("promote", citizen.characterid);
         }

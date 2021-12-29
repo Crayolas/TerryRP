@@ -196,8 +196,12 @@ namespace Roleplay{
                
                 Vector3 rotationtoward = citizen.Position- Local.Pawn.Position;
                 rotationtoward.z = 0;
+                if(Enum.GetName(citizen.partydata.Item1)!="noparty"){
                 partyicon.Style.SetBackgroundImage("/ui/"+Enum.GetName(citizen.partydata.Item1)+".png");
                 partyicon.Style.BackgroundTint = citizen.partydata.Item2;
+                }else{
+                    partyicon.Style.SetBackgroundImage("");
+                }
                 Transform = citizen.Transform.Add(tagoffset, false);
                   Rotation = Rotation.LookAt(-rotationtoward);
                             if(identifyingtext > 4){

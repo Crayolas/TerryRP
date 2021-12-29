@@ -58,13 +58,10 @@ namespace Roleplay
 		public List<Profile> AllProfiles{get;set;} = new List<Profile>();
 		public Dictionary<int, Profile> ProfileDictionary {get; set;}= new();		
 		public List<Party> StartParties = new();
-		[Net, Local]
+		[Net]
 		public List<Party> AllParties {get;set;} = new();
-		
 		public BaseFileSystem serverdata;
-
 		public WebSocket socket;
-
 		public bool usewebsocket = false;
 		public bool GetConnectedViaWS(){
 			if(socket.IsConnected == true)return true;
@@ -120,6 +117,7 @@ namespace Roleplay
 				}
 				
 				foreach(Party p in StartParties){
+					//AllParties.Insert(Random.Shared.Next(0, AllParties.Count+1),p);
 					AllParties.Add(p);
 				}
 				StartParties = null;
@@ -296,6 +294,7 @@ namespace Roleplay
 			PartiesBase.current = new PartiesBase();
 			Local.Hud.AddChild(PartiesBase.current);
 		}
+
 
 
 
@@ -663,22 +662,29 @@ namespace Roleplay
 							Citizen ci;
 							Citizen inviter;
 							Action functiontocall;
-							Party p = null;
+							int pind = -1;
 							inviter = (ConsoleSystem.Caller.Pawn as Citizen);
 							
 							if ((ConsoleSystem.Caller.Pawn as Citizen).partydata.Item1 == partyicon.noparty){
-								p = Party.CreateParty((ConsoleSystem.Caller.Pawn as Citizen));
+								pind = Party.CreateParty((ConsoleSystem.Caller.Pawn as Citizen));
 							
 							((RoleplayGame)Current).joinparty(To.Single(ConsoleSystem.Caller.Pawn as Citizen));
-							}else if((ConsoleSystem.Caller.Pawn as Citizen).party != null){
-								 p =  inviter.party;
+							}else if((ConsoleSystem.Caller.Pawn as Citizen).partyind != -1){
+								 pind =  inviter.partyind;
+
+
 							}
-							if (p != null && p.Leader == inviter){
+							if (pind != -1 && ((RoleplayGame)Game.Current).AllParties[pind].Leader == inviter){
 						
-							(ConsoleSystem.Caller.Pawn as Citizen).partydata = (p.icon, p.color);
+							(ConsoleSystem.Caller.Pawn as Citizen).partydata = (((RoleplayGame)Game.Current).AllParties[pind].icon, ((RoleplayGame)Game.Current).AllParties[pind].color);
 								ci = (ConsoleSystem.Caller.Pawn as Citizen).interactingwith;
 								if (ci.partydata.Item1 == partyicon.noparty){
-									functiontocall = () => TryJoinParty(p, ci, inviter);
+
+									
+									
+									
+									
+									functiontocall = () => TryJoinParty(((RoleplayGame)Game.Current).AllParties[pind], ci, inviter);
 									
 									ci.sendconfirmation("Would you like to join "+inviter.Name+"'s party?", functiontocall);
 									Citizen.Notify(To.Single(ConsoleSystem.Caller), "Party invite sent.", "success");
@@ -723,6 +729,7 @@ namespace Roleplay
 							p.AddMember(invitee);
 							
 							((RoleplayGame)Current).joinparty(To.Single(invitee));
+						
 							}else{
 								Citizen.Notify(To.Single(invitee), "This invite is no longer valid.");
 							}}else{
@@ -746,14 +753,16 @@ namespace Roleplay
 						}
 						[ServerCmd]
 						public static void party(string command, int characterid = -1){
-													
+										
 							if ((ConsoleSystem.Caller.Pawn as Citizen).partydata.Item1 != partyicon.noparty){
+							Party party = ((RoleplayGame)Game.Current).AllParties[(ConsoleSystem.Caller.Pawn as Citizen).partyind];
 							if(command == "kick" && characterid != -1){
-							if ((ConsoleSystem.Caller.Pawn as Citizen).party.Leader == (ConsoleSystem.Caller.Pawn as Citizen)){
-								foreach(Citizen citi in (ConsoleSystem.Caller.Pawn as Citizen).party.members){
+							if (party.Leader == (ConsoleSystem.Caller.Pawn as Citizen)){
+								
+								foreach(Citizen citi in party.members){
 									if (citi.characterid == characterid){
 										Citizen.Notify(To.Single(citi), "You were removed from your party.");
-										citi.party.RemoveMember(citi);
+										party.RemoveMember(citi);
 										
 										return;
 									}
@@ -763,13 +772,13 @@ namespace Roleplay
 							}
 							if(command == "leave"){
 
-								(ConsoleSystem.Caller.Pawn as Citizen).party.RemoveMember((ConsoleSystem.Caller.Pawn as Citizen));
+								party.RemoveMember((ConsoleSystem.Caller.Pawn as Citizen));
 							}
 							if(command == "promote" && characterid != -1){
-								if ((ConsoleSystem.Caller.Pawn as Citizen).party.Leader == (ConsoleSystem.Caller.Pawn as Citizen)){
-									foreach(Citizen citi in (ConsoleSystem.Caller.Pawn as Citizen).party.members){
-									if (citi.characterid == characterid && citi != (ConsoleSystem.Caller.Pawn as Citizen).party.Leader){
-										(ConsoleSystem.Caller.Pawn as Citizen).party.PromoteMember(citi);
+								if (party.Leader == (ConsoleSystem.Caller.Pawn as Citizen)){
+									foreach(Citizen citi in party.members){
+									if (citi.characterid == characterid && citi != party.Leader && ((RoleplayGame)Game.Current).AllParties[citi.partyind] == party){
+										party.PromoteMember(citi);
 										Citizen.Notify(To.Single(citi), "You are now party leader.");
 									}
 									}

@@ -28,8 +28,8 @@ public enum partyicon{
 public partial class Citizen{
     [Net]
     public (partyicon, Color) partydata{get; set;} = (partyicon.noparty, Color.Black);
-    [Net, Local]
-    public Party party {get;set;}
+    [Net]
+    public int partyind {get;set;}
 }
 public partial class Party:BaseNetworkable{
 
@@ -40,8 +40,8 @@ public partial class Party:BaseNetworkable{
     [Net]
     public Citizen Leader{get; set;}
     [Net]
-    public List<Citizen> members {get; set;} = new();
-
+    public List<Citizen> members {get; set;} = new List<Citizen>();
+    public int index;
     public Party(){
         
     }
@@ -79,7 +79,8 @@ public partial class Party:BaseNetworkable{
 
 
     }
-    public static Party CreateParty(Citizen Leader){
+
+    public static int CreateParty(Citizen Leader){
         if (Leader != null){
             List<int> openindices = new();
             int ind = 0;
@@ -93,16 +94,19 @@ public partial class Party:BaseNetworkable{
         }
 
         if (openindices.Count != 0){
-            int targetindex = Random.Shared.Next(0, openindices.Count);
+            int targetindex = openindices[Random.Shared.Next(0, openindices.Count)];
+
+            (Game.Current as RoleplayGame).AllParties[targetindex].index = targetindex;
             (Game.Current as RoleplayGame).AllParties[targetindex].AddMember(Leader);
             (Game.Current as RoleplayGame).AllParties[targetindex].Leader = Leader;
-            return (Game.Current as RoleplayGame).AllParties[targetindex];
+            
+            return targetindex;
             
 
         }
 
         }
-        return null;
+        return -1;
     }
     public bool AddMember(Citizen target){
         if(target.partydata.Item1 != partyicon.noparty){
@@ -110,16 +114,18 @@ public partial class Party:BaseNetworkable{
         }else{
             members.Add(target);
             target.partydata = (icon, color);
-            target.party = this;
+            
+            target.partyind = index;
+
             return true;
         }
     }
         public bool RemoveMember(Citizen target){
             
-        if (target.party == this){
+        if (target.partyind == index){
             members.Remove(target);
             target.partydata = (partyicon.noparty, Color.Black);
-            //qtarget.party = null;
+            //target.party = null;
             if(Leader == target){
                 foreach(Citizen ci in members){
                     Leader = ci;
@@ -134,7 +140,7 @@ public partial class Party:BaseNetworkable{
         }
     }
     public bool PromoteMember(Citizen target){
-        if (target.party == this){
+        if (target.partyind == index){
             Leader = target;
             return true;
         }else{

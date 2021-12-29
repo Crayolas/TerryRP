@@ -228,6 +228,11 @@ namespace Roleplay
 
 			}
 			if (IsServer){
+				Party p = ((RoleplayGame)Game.Current).AllParties[partyind];
+				Log.Info(Enum.GetName(p.icon) +" " +p.index + " "+ partyind);
+				foreach (Citizen cit in ((RoleplayGame)Game.Current).AllParties[partyind].members){
+					Log.Info(cit.Name);
+				}
 				var temp = new List<Citizen>();
 				foreach(Citizen ci in AllCitizens){
 					
@@ -280,8 +285,8 @@ namespace Roleplay
 					
 					if(timesincelogout >= timetologout){
 						startlogout = false;
-						if (party!=null){
-						party.RemoveMember(this);
+						if (((RoleplayGame)Game.Current).AllParties[partyind]!=null){
+						 ((RoleplayGame)Game.Current).AllParties[partyind].RemoveMember(this);
 						}
 						HideHud(To.Single(this));
 						AllCitizens.Remove(this);
