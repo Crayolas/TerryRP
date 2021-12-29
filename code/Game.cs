@@ -120,7 +120,7 @@ namespace Roleplay
 				}
 				
 				foreach(Party p in StartParties){
-					AllParties.Insert(Random.Shared.Next(0, AllParties.Count+1),p);
+					AllParties.Add(p);
 				}
 				StartParties = null;
 				RoleplayHud rphud = new RoleplayHud();
