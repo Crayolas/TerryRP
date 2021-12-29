@@ -6,7 +6,239 @@ RootpaneL
 
 
 }
+PartiesBase{
+	&.visible{
 
+		PartyMember{
+			.leadercontrols{
+				display: flex;
+				position:absolute;
+			}
+		}
+		}
+	z-index:10000;
+	background-color: rgba(0, 0, 0, .95);
+	backdrop-filter: blur(30px) saturate(180%);
+	width:160px;
+	height:30px;
+	top:10px;
+	left:10px;
+	border-radius: 5px;
+	position:absolute;
+	justify-content: center;
+	transition: all .25s ease-out;
+	&.Qdown{
+		top:95px;
+	}
+	.partylabel{
+		position:absolute;
+		font-family: Questrial;
+		color: white;
+		margin-top: 5px;
+		align-self: center;
+		
+	}
+	&:intro{
+		opacity: 0;
+		transform: scale(0) translateX(-100);
+		
+	}
+	&:outro{
+		opacity: 0;
+		transform: scale(0) translateX(-100px);
+
+	}
+	.leavebutton{
+		cursor: hand;
+		width:20px;
+		height:20px;
+		position: absolute;
+		right:3px;
+		bottom:5px;
+		
+		border-radius: 0px 5px 5px 0px;
+
+		background-image: url("/ui/leave.png");
+		background-repeat: no-repeat;
+		background-size: cover;
+		transition: all .25s ease-out;
+
+		&:hover{
+			background-image-tint: rgb(0, 119, 255);
+			box-shadow: 0px 0px 8px 0px #0f87ff0e;
+			
+		}
+
+	}
+	.iconbase{
+		height:30px;
+		width:30px;
+		border-radius: 5px 0px 0px 5px;
+		left:0px;
+		top:0px;
+		position:absolute;
+		
+	}
+	.iconpanel{
+		align-self:center;
+		background-repeat: no-repeat;
+		background-size: cover;
+		width:25px;
+		height:25px;
+		left:2px;
+		position:absolute;
+
+	}
+	PartyMember{
+
+		justify-content: center;
+		top:40px;
+		position:absolute;
+		background-color: rgba(0, 0, 0, .95);
+		backdrop-filter: blur(30px) saturate(180%);
+		width:160px;
+		height:30px;
+		border-radius: 5px;
+
+		&:hover{
+			.leadercontrols{
+				opacity: 1;
+			}
+		}
+		&.isleader{
+			.leadericon{
+				display:flex;
+			}
+		}
+		.leadericon{
+			background-image:url("/ui/crown.png");
+			background-size: cover;
+			width:15px;
+			height:15px;
+			background-repeat: no-repeat;
+
+			background-image-tint:rgb(255, 166, 0);
+			position:absolute;
+			right:7px;
+			top:5px;
+			display: none;
+
+		}
+		.leadercontrols{
+			background-color: rgba(0, 0, 0, 0.315);
+			width:160px;
+			height:30px;
+			top:0px;
+			position:absolute;
+			z-index: 5000;
+			border-radius: 0px 0px 5px 5px;
+			display: none;
+			opacity: 0;
+			transition: all .25s ease-out;
+
+		}
+		/*
+		Button{
+			cursor: hand;
+			position:absolute;
+			right:-20px;
+			width:15px;
+			height:15px;
+			background-repeat: no-repeat;
+			background-size: cover;
+			transition: all .25s ease-out;
+
+		}
+		.kickbutton{
+			background-image:url("/ui/removeplayer.png");
+			bottom:0px;
+			background-image-tint: rgb(236, 0, 0);
+		}
+		.promotebutton{
+			background-image:url("/ui/star.png");
+			top:0px;
+			transform:translateX(-1px);
+			background-image-tint: rgb(255, 166, 0);
+		}
+
+		*/
+		Button{
+			Label{
+				align-self: center;
+			}
+		}
+		.kickbutton{
+			background-color:rgba(0, 0, 0, .95);
+			width: 82px;
+			height:100%;
+			border-radius: 4px 0px 0px 4px;
+			left:-3px;
+			position:absolute;
+			backdrop-filter: blur(2px);
+			justify-content: center;
+			z-index: 5001;
+			transition:all .25s ease-out;
+			&:hover{
+				cursor: hand;
+				box-shadow: 0px 0px 8px 0px #0f87ffaf;
+				z-index: 5002;
+				Label{
+					color: rgb(0, 119, 255);
+				}
+			}
+
+		}
+		.promotebutton{
+			background-color:rgba(0, 0, 0, .95);
+			width: 82px;
+			height:30px;
+			border-radius: 0px 5px 5px 0px;
+			right:-3px;
+			position:absolute;
+			backdrop-filter: blur(2px);
+			justify-content: center;
+			z-index: 5001;
+			transition:all .25s ease-out;
+			&:hover{
+				cursor: hand;
+				box-shadow: 0px 0px 8px 0px #0f87ffaf;
+				z-index: 5002;
+				Label{
+					color: rgb(0, 119, 255);
+				}
+			}
+		}
+		Label{
+			position:absolute;
+			font-family: Questrial;
+			color: white;
+			margin-top: 5px;
+
+			
+
+		}
+		.healthbar{
+			position:absolute;
+			background-color:rgba(236, 0, 0, 0.459);
+			height:5px;
+			top:25px;
+			left:0px;
+			border-radius: 0px 0px 5px 5px;
+
+		}
+		.healthbase{
+			position:absolute;
+			background-color:rgba(236, 0, 0, 0.068);
+			height:5px;
+			top:25px;
+			left:0px;
+			width:160px;
+			
+			border-radius: 0px 0px 5px 5px;
+		}
+		
+	}
+}
 PlayerInteractMenu{
 	align-self:center;
 	position:absolute;
@@ -14,6 +246,7 @@ PlayerInteractMenu{
 	height:160px;
 	border-radius: 5px;
 	background-color: rgba(0, 0, 0, .95);
+	backdrop-filter: blur(30px) saturate(180%);
 	pointer-events: all;
 	z-index: 5;
 	transition: all .25s ease-out;
@@ -354,11 +587,12 @@ MenuConfirmation{
 		height:170px;
 		border-radius: 5px;
 		position:absolute;
-		border-width:2px;
+		border-width:1px;
 		border-color: rgb(0, 119, 255);
 		justify-content: center;
 		box-shadow: 0px 4px 15px 5px #00000041;
 		transition: all .25s ease-out;
+
 		&:intro{
 				
 			transform:scale(0)translateY(300%);
@@ -372,9 +606,10 @@ MenuConfirmation{
 		}
 		.confirmmessage{
 			background-color:rgba(0, 0, 0, 0);
-			color:white;
+			color:rgba(255, 255, 255, 0.863);
 			font-size:15px;
-			margin:10px;
+			margin:15px;
+			
 			
 
 
@@ -1556,6 +1791,7 @@ RPChat{
 	
 }
 rpnametag{
+	
 	&.playerselected{
 		rpnamebase{
 		rpidentifiedpercent{
@@ -1592,11 +1828,22 @@ rpnametag{
 		//right:-200px;
 		margin-top:50px;
 		}
-	
+	.partyicon{
+		align-self:center;
+		background-repeat: no-repeat;
+		background-size: cover;
+		width:75px;
+		height:75px;
+		position:absolute;
+		opacity:.05;
+		left:0px;
+		top:-10px;
+		
+	}
 
 	rpnamebase{
 	
-
+		overflow:hidden;
 	top:25%;
 	
 	width:250px;

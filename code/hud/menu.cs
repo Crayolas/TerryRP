@@ -47,13 +47,13 @@ public class MenuBase:Panel{
         Sound.FromScreen("menuopen");
         RPMenu p = new RPMenu("organizationpanel");
         Local.Hud.AddChild(p);
-        
+        PartiesBase.movedown = 0;
         DeleteChildren();
     }
     public void gotoinventory(){
         Sound.FromScreen("click");
         Sound.FromScreen("menuopen");
-
+        PartiesBase.movedown = 0;
         DeleteChildren();
     }
     public void exittocharacterselect(){
@@ -126,6 +126,7 @@ public class HotbarButton:Button{
 
 }
 public class HotbarIcon:Panel{
+
         public HotbarButton parent;
          protected override void OnMouseOver( MousePanelEvent e ){
             parent.iconhovered = true;
@@ -368,6 +369,7 @@ public class MembersBase:Panel{
        o = Org.GetOrg(Local.Pawn as Citizen);
         foreach(int i in RPMenu.current.org.Members){
            AddChild(new Member(i));
+           
         }
     }
 
@@ -382,6 +384,9 @@ public class Member:Panel{
         charactername = new();
         charactername.Text = name;
         AddChild(charactername);
+               //Style.BackgroundTint = (Local.Pawn as Citizen).partydata.Item2;
+               
+ 
     }
 }
 public class NoOrgPanel:Panel{

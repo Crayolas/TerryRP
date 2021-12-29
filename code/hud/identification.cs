@@ -22,6 +22,7 @@ namespace Roleplay{
         public rpname rptext;
         public Label orgname;
         public Citizen citizen;
+        public Panel partyicon;
         public rpnametag(Citizen othercitizen){
             StyleSheet.Load( "/hud/Hud.scss" );
             if (othercitizen!=null){
@@ -31,6 +32,12 @@ namespace Roleplay{
             textbase = new rpnamebase();
             rptext = new rpname();
             idpercent = new rpidentifiedpercent();
+            partyicon = new();
+            partyicon.AddClass("partyicon");
+            
+
+            
+            textbase.AddChild(partyicon);
             textbase.AddChild(idpercent);
             textbase.AddChild(rptext);
             textbase.AddChild(orgname);
@@ -113,7 +120,7 @@ namespace Roleplay{
             if (clidentifiedcitizens.Contains(citizen)){
                 isidentified=true;
             }
-
+            
 
             if(cltimetillid.ContainsKey(citizen)){
             idpercent.Style.Width = 250*cltimetillid[citizen]/100f;
@@ -189,7 +196,8 @@ namespace Roleplay{
                
                 Vector3 rotationtoward = citizen.Position- Local.Pawn.Position;
                 rotationtoward.z = 0;
-              
+                partyicon.Style.SetBackgroundImage("/ui/"+Enum.GetName(citizen.partydata.Item1)+".png");
+                partyicon.Style.BackgroundTint = citizen.partydata.Item2;
                 Transform = citizen.Transform.Add(tagoffset, false);
                   Rotation = Rotation.LookAt(-rotationtoward);
                             if(identifyingtext > 4){

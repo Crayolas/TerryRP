@@ -50,7 +50,7 @@ namespace Roleplay{
            Delete(); 
         }
         public void invitetoparty(){
-
+            RoleplayGame.PartyInvite();
             Sound.FromScreen("click");
             Delete();
         }

@@ -38,6 +38,7 @@ namespace Roleplay
 		MenuBase menu;
 		Status status;
 		RPChat chat;
+
 		public bool startlogout = false;
 		
 		//rpnametags nametags = new rpnametags();
@@ -162,9 +163,11 @@ namespace Roleplay
 
 		[ClientRpc]	
 		public void ShowHud(){
-			if(chat == null && status == null){
+			if(chat == null && status == null ){
 			chat = Local.Hud.AddChild<RPChat>();
 			status = Local.Hud.AddChild<Status>();
+
+
 		}
 		}
 		[ClientRpc]
@@ -177,6 +180,7 @@ namespace Roleplay
 			status.Delete();
 			status = null;
 			}
+
 			
 		}
 		[ClientRpc]
@@ -276,6 +280,9 @@ namespace Roleplay
 					
 					if(timesincelogout >= timetologout){
 						startlogout = false;
+						if (party!=null){
+						party.RemoveMember(this);
+						}
 						HideHud(To.Single(this));
 						AllCitizens.Remove(this);
 						org = null;
@@ -303,7 +310,11 @@ namespace Roleplay
 			if (IsClient && Input.Pressed(InputButton.Menu)){
 				if(menu == null && LogoutMenu.current == null&&RPMenu.current == null){
 					menu = new MenuBase();
+			
 					Local.Hud.AddChild(menu);
+					if (PartiesBase.movedown == 0){
+					PartiesBase.movedown = 1;
+					}
 				}
 			}
 			if(IsClient && Input.Released(InputButton.Menu)){
@@ -312,6 +323,9 @@ namespace Roleplay
 					menu.DeleteChildren();
 					menu.Delete();
 					menu = null;
+					if (PartiesBase.movedown != 2){
+					PartiesBase.movedown = 0;
+					}
 					}
 				}
 			}

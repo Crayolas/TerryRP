@@ -120,7 +120,7 @@ namespace Roleplay{
             foreach(Client cl in Client.All){
                 if (cl.Pawn != null){
                     if((cl.Pawn as Citizen).characterid == CharacterID){
-                        Citizen.Notify(To.Single(cl), o.Name+" you have left "+o.Name+".");
+                        Citizen.Notify(To.Single(cl),"You have left "+o.Name+".");
                         (cl.Pawn as Citizen).org = null;
                         (Game.Current as RoleplayGame).ShowNoOrg(To.Single(cl));
                     }

@@ -90,7 +90,6 @@ namespace Roleplay{
 
         public override void Tick(){
             base.Tick();
-
             if (deleteconfirmation!=-1 && confirmationid == deleteconfirmation){
                  if(islarge){
             

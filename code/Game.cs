@@ -10,6 +10,7 @@ using System.Text.Json.Serialization;
 
 
 
+
 //
 // You don't need to put things in a namespace, but it doesn't hurt.
 //
@@ -56,6 +57,10 @@ namespace Roleplay
 		[Net]
 		public List<Profile> AllProfiles{get;set;} = new List<Profile>();
 		public Dictionary<int, Profile> ProfileDictionary {get; set;}= new();		
+		public List<Party> StartParties = new();
+		[Net, Local]
+		public List<Party> AllParties {get;set;} = new();
+		
 		public BaseFileSystem serverdata;
 
 		public WebSocket socket;
@@ -71,12 +76,53 @@ namespace Roleplay
 			if ( IsServer )
 			{
 
+
 				Log.Info( "My Gamemode Has Created Serverside!" );
 
 				// Create a HUD entity. This entity is globally networked
 				// and when it is created clientside it creates the actual
 				// UI panels. You don't have to create your HUD via an entity,
 				// this just feels like a nice neat way to do it.
+					int ind = 0;
+					foreach(partyicon icon in Enum.GetValues(typeof(partyicon))){
+					if (icon!=partyicon.noparty){
+					StartParties.Add(new Party(null));
+					StartParties[ind].icon = icon;
+					StartParties[ind].color = Color.Cyan;
+					ind++;
+					StartParties.Add(new Party(null));
+					StartParties[ind].icon = icon;
+					StartParties[ind].color = Color.Red;
+					ind++;
+					StartParties.Add(new Party(null));
+					StartParties[ind].icon = icon;
+					StartParties[ind].color = Color.Magenta;
+					
+					ind++;
+					StartParties.Add(new Party(null));
+					StartParties[ind].icon = icon;
+					StartParties[ind].color = Color.Green;
+					
+					ind++;
+					StartParties.Add(new Party(null));
+					StartParties[ind].icon = icon;
+					StartParties[ind].color = Color.Yellow;
+					ind++;
+					StartParties.Add(new Party(null));
+					StartParties[ind].icon = icon;
+					StartParties[ind].color = Color.Orange;
+					ind++;
+					StartParties.Add(new Party(null));
+					StartParties[ind].icon = icon;
+					StartParties[ind].color = Color.Gray;
+					ind++;
+					}
+				}
+				
+				foreach(Party p in StartParties){
+					AllParties.Insert(Random.Shared.Next(0, AllParties.Count+1),p);
+				}
+				StartParties = null;
 				RoleplayHud rphud = new RoleplayHud();
 				Treasury treasury = new Treasury();
 				if(usewebsocket){
@@ -166,6 +212,7 @@ namespace Roleplay
 			if(LogoutMenu.current != null){
 				LogoutMenu.current.Delete();
 				LogoutMenu.current = null;
+				PartiesBase.movedown = 0;
 			}
 		}
 
@@ -179,8 +226,10 @@ namespace Roleplay
 		[ClientRpc]
 		public void gotologoutscreen(int timetologout){
 			if(LogoutMenu.current == null){
+			PartiesBase.movedown = 2;
 			LogoutMenu p = new LogoutMenu(timetologout);
 			LogoutMenu.current = p;
+			
 			Local.Hud.AddChild(p);
 			}
 		}
@@ -238,6 +287,14 @@ namespace Roleplay
 				(RPMenu.current.selectedpanel as OrganizationPanel).SwitchTo("orghomepanel");
 				
 			}
+		}
+		[ClientRpc]
+		public void joinparty(){
+			if (PartiesBase.current != null){
+			PartiesBase.current.Delete();
+			}
+			PartiesBase.current = new PartiesBase();
+			Local.Hud.AddChild(PartiesBase.current);
 		}
 
 
@@ -539,12 +596,14 @@ namespace Roleplay
 						[ServerCmd]
 						public static void CancelLogout(){
 							(ConsoleSystem.Caller.Pawn as Citizen).startlogout = false;
+							
 							(Current as RoleplayGame).exitlogoutscreen(To.Single(ConsoleSystem.Caller));
 						}
 
 						[ServerCmd]
 						public static void Logout(){
 							(ConsoleSystem.Caller.Pawn as Citizen).startlogout = true;
+							
 							(Current as RoleplayGame).gotologoutscreen(To.Single(ConsoleSystem.Caller),Citizen.timetologout);
 						}
 							
@@ -598,7 +657,43 @@ namespace Roleplay
 							 
 
 						}
+						[ServerCmd]
+						public static void PartyInvite(){
+						
+							Citizen ci;
+							Citizen inviter;
+							Action functiontocall;
+							Party p = null;
+							inviter = (ConsoleSystem.Caller.Pawn as Citizen);
+							
+							if ((ConsoleSystem.Caller.Pawn as Citizen).partydata.Item1 == partyicon.noparty){
+								p = Party.CreateParty((ConsoleSystem.Caller.Pawn as Citizen));
+							
+							((RoleplayGame)Current).joinparty(To.Single(ConsoleSystem.Caller.Pawn as Citizen));
+							}else if((ConsoleSystem.Caller.Pawn as Citizen).party != null){
+								 p =  inviter.party;
+							}
+							if (p != null && p.Leader == inviter){
+						
+							(ConsoleSystem.Caller.Pawn as Citizen).partydata = (p.icon, p.color);
+								ci = (ConsoleSystem.Caller.Pawn as Citizen).interactingwith;
+								if (ci.partydata.Item1 == partyicon.noparty){
+									functiontocall = () => TryJoinParty(p, ci, inviter);
+									
+									ci.sendconfirmation("Would you like to join "+inviter.Name+"'s party?", functiontocall);
+									Citizen.Notify(To.Single(ConsoleSystem.Caller), "Party invite sent.", "success");
+								}else{
+									Citizen.Notify(To.Single(ConsoleSystem.Caller), "This person is already in a party.");
+								}
+
+							}else{
+								Citizen.Notify(To.Single(ConsoleSystem.Caller), "You aren't the leader of your party.");
+							}
+								
+						}
 						public static void TryJoinOrg(Org o, Citizen invitee, Citizen inviter){
+								//PARTY BECOMES A MEM ADDRESS WHEN WOMEONE ?you invited?" LEAVES ANY PARTY?@?!? 
+								//ONLY COMES BACK IF THAT PERSON MAKES A PARTY AND BREAKS IF THEY LEAVE GAME
 							bool abletojoin;
 							Org org = null;
 							foreach(Org or in (Game.Current as RoleplayGame).AllOrgs){
@@ -620,6 +715,20 @@ namespace Roleplay
 
 
 						}
+						public static void TryJoinParty(Party p, Citizen invitee, Citizen inviter){
+
+							if (invitee.partydata.Item1 == partyicon.noparty){
+						
+							if (p!=null && p.members.Contains(inviter)){
+							p.AddMember(invitee);
+							
+							((RoleplayGame)Current).joinparty(To.Single(invitee));
+							}else{
+								Citizen.Notify(To.Single(invitee), "This invite is no longer valid.");
+							}}else{
+								Citizen.Notify(To.Single(invitee), "You are already in a party.");
+							}
+						}
 						[ServerCmd]
 						public static void confirm(int confirmationid){
 							if ((ConsoleSystem.Caller.Pawn as Citizen).confirmations[confirmationid] != null){
@@ -633,6 +742,40 @@ namespace Roleplay
 						public static void deny(int confirmationid){
 							
 							((RoleplayGame)Current).removeconfirmation(To.Single(ConsoleSystem.Caller),confirmationid);
+
+						}
+						[ServerCmd]
+						public static void party(string command, int characterid = -1){
+													
+							if ((ConsoleSystem.Caller.Pawn as Citizen).partydata.Item1 != partyicon.noparty){
+							if(command == "kick" && characterid != -1){
+							if ((ConsoleSystem.Caller.Pawn as Citizen).party.Leader == (ConsoleSystem.Caller.Pawn as Citizen)){
+								foreach(Citizen citi in (ConsoleSystem.Caller.Pawn as Citizen).party.members){
+									if (citi.characterid == characterid){
+										Citizen.Notify(To.Single(citi), "You were removed from your party.");
+										citi.party.RemoveMember(citi);
+										
+										return;
+									}
+								}
+
+							}
+							}
+							if(command == "leave"){
+
+								(ConsoleSystem.Caller.Pawn as Citizen).party.RemoveMember((ConsoleSystem.Caller.Pawn as Citizen));
+							}
+							if(command == "promote" && characterid != -1){
+								if ((ConsoleSystem.Caller.Pawn as Citizen).party.Leader == (ConsoleSystem.Caller.Pawn as Citizen)){
+									foreach(Citizen citi in (ConsoleSystem.Caller.Pawn as Citizen).party.members){
+									if (citi.characterid == characterid && citi != (ConsoleSystem.Caller.Pawn as Citizen).party.Leader){
+										(ConsoleSystem.Caller.Pawn as Citizen).party.PromoteMember(citi);
+										Citizen.Notify(To.Single(citi), "You are now party leader.");
+									}
+									}
+								}
+							}
+							}
 
 						}
 						public struct clientdata{ public string _id {get; set;}
