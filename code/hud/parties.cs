@@ -16,7 +16,7 @@ public class PartiesBase:Panel{
     public PartiesBase(){
 
         Party p =  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind];
-        Log.Info(p+"haha");
+        
         membertags = new();
         //party=p;
         icon = Enum.GetName(p.icon)+".png";
