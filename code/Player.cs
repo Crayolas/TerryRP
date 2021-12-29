@@ -231,7 +231,7 @@ namespace Roleplay
 				Party p = ((RoleplayGame)Game.Current).AllParties[partyind];
 				
 				foreach (Citizen cit in ((RoleplayGame)Game.Current).AllParties[partyind].members){
-					Log.Info(cit.Name);
+					
 				}
 				var temp = new List<Citizen>();
 				foreach(Citizen ci in AllCitizens){
