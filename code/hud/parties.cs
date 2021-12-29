@@ -63,7 +63,7 @@ public class PartiesBase:Panel{
     public override void Tick(){
     
     base.Tick();
-        Log.Info((Local.Pawn as Citizen).partyind);
+ 
         if((Local.Pawn as Citizen).partydata.Item1 == partyicon.noparty){
         current = null;
         //party = null;
