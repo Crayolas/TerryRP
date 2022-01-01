@@ -29,6 +29,7 @@ public Dictionary<Citizen, TimeSince> identifiedcitizens {get; set;} = new Dicti
         
        
     public void addtoidlist(Citizen ci){
+        
         timetillid.Add(ci, 0);
         rpnametag.updateidentification(To.Single(owner),ci, "addtoidlist");
     }
@@ -37,9 +38,11 @@ public Dictionary<Citizen, TimeSince> identifiedcitizens {get; set;} = new Dicti
         rpnametag.updateidentification(To.Single(owner), ci,"removefromidlist");
     }
     public void identify(Citizen ci){
+        if (identifiedcitizens.ContainsKey(ci)==false){
         identifiedcitizens.Add(ci, 0);
         
        rpnametag.updateidentification(To.Single(owner),ci, "identify");
+        }
     }
     public void unidentify(Citizen ci){
         if(identifiedcitizens.ContainsKey(ci)){

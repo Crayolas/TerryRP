@@ -12,11 +12,12 @@ public class PartiesBase:Panel{
     static string icon;
     static Color color;
     static Dictionary<Citizen, PartyMember> membertags = new();
+    static Dictionary<Citizen, PlayerMarker> markers = new(); 
     
     public PartiesBase(){
 
         Party p =  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind];
-        
+       
         membertags = new();
         //party=p;
         icon = Enum.GetName(p.icon)+".png";
@@ -63,15 +64,20 @@ public class PartiesBase:Panel{
     public override void Tick(){
     
     base.Tick();
- 
-        if((Local.Pawn as Citizen).partydata.Item1 == partyicon.noparty){
+        
+        if((Local.Pawn as Citizen).partydata.Item1 == partyicon.noparty ){
+        foreach(KeyValuePair<Citizen, PlayerMarker> pm in markers){
+            pm.Value.Delete();
+        }
         current = null;
         //party = null;
         Delete();
         return;
 
     }
-                if (Local.Pawn as Citizen ==  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].Leader){
+    
+            
+                if (Local.Pawn as Citizen ==  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind]?.Leader){
         SetClass("visible", true);
             
         }else{
@@ -91,12 +97,20 @@ public class PartiesBase:Panel{
             membertags.Add(m, mem);
             AddChild(mem);
         }
+        if(markers.ContainsKey(m) == false && m!= Local.Pawn as Citizen){
+            PlayerMarker marker = new();
+            markers.Add(m, marker);
+            marker.playername.Text = m.Name;
+            Local.Hud.AddChild(marker);
+        }
     }
     int index = 0;
     foreach(KeyValuePair<Citizen, PartyMember> kvpair in membertags){
         if(! ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].members.Contains(kvpair.Key)){
             kvpair.Value.Delete();
             membertags.Remove(kvpair.Key);
+            markers[kvpair.Key].Delete();
+            markers.Remove(kvpair.Key);
         }else{
             if (kvpair.Key ==  ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].Leader){
                 kvpair.Value.SetClass("isleader", true);
@@ -111,6 +125,30 @@ public class PartiesBase:Panel{
 
 
     }
+
+
+    foreach(KeyValuePair<Citizen, PlayerMarker> kvpair in markers){
+        
+        
+        if (kvpair.Key.IsValid()){
+            if (rpnametag.nametags.ContainsKey(kvpair.Key)){
+                kvpair.Value.SetClass("tagvisible", true);
+                continue;
+            }
+            kvpair.Value.SetClass("tagvisible", false);
+            
+            Vector3 pos = kvpair.Key.Position + new Vector3(0,0,60);
+            Vector3 screenpos = pos.ToScreen();
+            if(Math.Abs(screenpos.x-.5)  < .10 && Math.Abs(screenpos.y-.5)  < .10 ){
+                kvpair.Value.playername.SetClass("visible", true);
+
+            }else{
+               kvpair.Value.playername.SetClass("visible", false); 
+            }
+            kvpair.Value.Style.Left= screenpos.x*Screen.Width;
+            kvpair.Value.Style.Top = screenpos.y*Screen.Height;
+           
+        }
 
     }
 
@@ -166,5 +204,16 @@ public class PartyMember:Panel{
         }
     }
 
+}
+
+public class PlayerMarker:Panel{
+    
+    public Label playername;
+
+    public PlayerMarker(){
+        playername = new();
+        AddChild(playername);
+    }
+}
 }
 }

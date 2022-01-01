@@ -16,19 +16,20 @@ namespace Roleplay{
         Button denybutton;
         public int confirmationid = -1;
         
-        public Notification(string info, string type = "default", int time = 5, bool confirmation = false,  int conid = -1){
+        public Notification(string info, string type = "default", int time = 5, bool confirmation = false,  int conid = -1, Citizen sender = null){
             Sound.FromScreen("notification", .75f, 1);
             if (type == "success")Sound.FromScreen("success", .75f, 1);
-            AddChild(new NotificationIcon(type));
+            AddChild(new NotificationIcon(type, sender));
             AddChild(new NotificationInfo(info));
             AddChild(new NotificationTime(time));
-         
+            NotificationTime timebar = new NotificationTime(time);
+            
             if (confirmation == true){
             confirmationid = conid;
             notifypersisttime=0;
-           
-            confirmationbutton = new Button(null, "", confirm);
-            denybutton = new Button(null, "", deny);
+            timebar.Style.BackgroundColor= new Color(0, .466f, 1f);
+            confirmationbutton = new Button("Yes", "", confirm);
+            denybutton = new Button("No", "", deny);
             confirmationbutton.AddClass("confirmbutton");
             denybutton.AddClass("denybutton");
             AddChild(confirmationbutton);
@@ -39,6 +40,7 @@ namespace Roleplay{
             if(info.Length>50){
             islarge = true;
             }
+            AddChild(timebar);
             int infosize = 10;
  
             for(int i = 0; i<nt.Length; i++){
@@ -154,7 +156,7 @@ namespace Roleplay{
         }
     }
     public class NotificationIcon : Panel{
-        public NotificationIcon(string type){
+        public NotificationIcon(string type, Citizen sender = null){
             type = type.ToLower();
             if (type == "money"){
                 Style.SetBackgroundImage("/ui/cash0.png");
@@ -162,6 +164,21 @@ namespace Roleplay{
             }
             if (type == "success"){
                 Style.SetBackgroundImage("/ui/checkmark.png");
+                return;
+             }
+             if (type == "friendrequest"){
+                 Style.SetBackgroundImage("/ui/friendrequest.png");
+                Style.BackgroundTint= new Color(0, .316f, 1f);
+                return;
+             }
+             if (type == "orginvite"){
+                 Style.SetBackgroundImage("/ui/orginvite.png");
+                 Style.BackgroundTint= new Color(0, .316f, 1f);
+                 return;
+             }
+             if (type == "partyinvite" && sender != null){
+                Style.SetBackgroundImage("/ui/" + Enum.GetName(sender.partydata.Item1)+".png");
+                Style.BackgroundTint= sender.partydata.Item2;
                 return;
              }
             if (type == "default" || true){

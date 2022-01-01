@@ -125,7 +125,7 @@ public partial class Party:BaseNetworkable{
         if (target.partyind == index){
             members.Remove(target);
             target.partydata = (partyicon.noparty, Color.Black);
-            //target.party = null;
+            target.partyind = -1;
             if(Leader == target){
                 foreach(Citizen ci in members){
                     Leader = ci;

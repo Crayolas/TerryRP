@@ -14,7 +14,7 @@ namespace Roleplay
 	{
 		
 		//rpnametags nametags = null;
-		[Net, Local]
+		[Net]
 		public int characterid {get; set;}
 		[Net, Local]
 		public Citizen interactingwith {get;set;}
@@ -228,11 +228,7 @@ namespace Roleplay
 
 			}
 			if (IsServer){
-				Party p = ((RoleplayGame)Game.Current).AllParties[partyind];
-				
-				foreach (Citizen cit in ((RoleplayGame)Game.Current).AllParties[partyind].members){
-					
-				}
+
 				var temp = new List<Citizen>();
 				foreach(Citizen ci in AllCitizens){
 					

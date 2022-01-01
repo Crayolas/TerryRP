@@ -117,13 +117,15 @@ namespace Roleplay{
             var isidentified = false;
            var tagoffset = new Vector3(0f, 0,65f);
 
-            if (clidentifiedcitizens.Contains(citizen)){
-                isidentified=true;
-            }
+
             
 
             if(cltimetillid.ContainsKey(citizen)){
             idpercent.Style.Width = 250*cltimetillid[citizen]/100f;
+            }
+                        if (clidentifiedcitizens.Contains(citizen) ||((Local.Pawn as Citizen).partyind != -1&& ((RoleplayGame)Game.Current).AllParties[(Local.Pawn as Citizen).partyind].members.Contains(citizen) == true)){
+                isidentified=true;
+                idpercent.Style.Width = 250;
             }
             //if(previouspercent<cltimetillid[citizen]){
             //    increase = true;

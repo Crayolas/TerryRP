@@ -6,6 +6,34 @@ RootpaneL
 
 
 }
+PlayerMarker{
+
+	background-image-tint: rgb(0, 81, 255);
+	background-image:url("/ui/partymarker.png");
+	position:absolute;
+	background-size: cover;
+	width:10px;
+	height:10px;
+	background-repeat: no-repeat;
+	
+	justify-content: center;
+	transform: translateX(-10px) translateY(-10px);
+	transition: opacity .25s ease-out;
+	&.tagvisible{
+		opacity:0;
+
+	}
+	Label{
+		transition: all .25s ease-out;
+		color: white;
+		position:absolute;
+		top:-15px;
+		opacity:0;
+		&.visible{
+			opacity: 1;
+		}
+	}
+}
 PartiesBase{
 	&.visible{
 
@@ -29,6 +57,8 @@ PartiesBase{
 	transition: all .25s ease-out;
 	&.Qdown{
 		top:95px;
+
+		
 	}
 	.partylabel{
 		position:absolute;
@@ -238,6 +268,7 @@ PartiesBase{
 		}
 		
 	}
+
 }
 PlayerInteractMenu{
 	align-self:center;
@@ -1645,7 +1676,13 @@ Notification{
 	align-items: center;
 	backdrop-filter: blur(30px) saturate(180%);
 	transition: all .25s ease-out; 
-	
+	&:hover{
+		Button{
+		opacity: 1;
+		
+		}
+
+	}
 
 	&:intro{
 		opacity: 0;
@@ -1662,28 +1699,44 @@ Notification{
 
 		}
 		Button{
-			height:3px;
-			width:150px;
-			top:47px;
+			Label{
+				align-self: center;
+				color:white;
+			}
+			backdrop-filter: blur(2px);
+			background-color: rgba(0, 0, 0, 0.95);
+			height: 50px;
+			width:153px;
+			
+			top:0px;
 			z-index:101;
+			opacity: 0;
 			position:absolute;
 			transition: all .25s ease-out;
+			justify-content: center;
 			&:hover{
-				height:6px;
+				cursor: hand;
+				box-shadow: 0px 0px 8px 0px #0f87ffaf;
+				z-index: 5002;
+				Label{
+					color: rgb(0, 119, 255);
+				}
 			}
+
 		}
 		.confirmbutton{
-			background-color: rgb(0, 177, 53);
-			left:0px;
+			
+			left:-3px;
 			cursor:hand;
-			border-radius:0px 0px 0px 5px;
+			border-radius:5px 0px 0px 5px;
 
 		}
 		.denybutton{
-			background-color:rgba(236, 0, 0, 1);
-			right:0px;
+			
+			right:-3px;
 			cursor:hand;
-			border-radius:0px 0px 5px 0px;
+			
+			border-radius:0px 5px 5px 0px;
 
 		}
 	

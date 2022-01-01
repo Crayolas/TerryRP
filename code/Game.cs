@@ -58,7 +58,7 @@ namespace Roleplay
 		public List<Profile> AllProfiles{get;set;} = new List<Profile>();
 		public Dictionary<int, Profile> ProfileDictionary {get; set;}= new();		
 		public List<Party> StartParties = new();
-		[Net]
+		[Net, Local]
 		public List<Party> AllParties {get;set;} = new();
 		public BaseFileSystem serverdata;
 		public WebSocket socket;
@@ -629,14 +629,35 @@ namespace Roleplay
 							Citizen target;
 							Action functiontocall;
 							if (org !=null){
+							
 							if ((ConsoleSystem.Caller.Pawn as Citizen).interactingwith!=null){
 							if ((ConsoleSystem.Caller.Pawn as Citizen).interactingwith.characterid!=0){
 							
+							
 								target = (ConsoleSystem.Caller.Pawn as Citizen).interactingwith;
+
+
+
+
+
+
+							foreach(Confirmation c in target.confirmations){
+								if (c.confirmtype == "orginvite" && c.Sender == (ConsoleSystem.Caller.Pawn as Citizen)){
+									Citizen.Notify(To.Single(ConsoleSystem.Caller),"You have already invited this person.");
+									return;
+								}
+							}
+
+
+
+
+
+
 								functiontocall = () => TryJoinOrg(org, target, ConsoleSystem.Caller.Pawn as Citizen);
 							if (target.org == null){
 								Citizen.Notify(To.Single(ConsoleSystem.Caller), "Organization invite sent.", "success");
-								target.sendconfirmation("Would you like to join "+org.Name+ "?" , functiontocall);
+								//target.idlist.identify((ConsoleSystem.Caller.Pawn as Citizen));
+								target.sendconfirmation("Would you like to join "+org.Name+ "?" , functiontocall, null, "orginvite", (ConsoleSystem.Caller.Pawn as Citizen));
 							}else{
 								Citizen.Notify(To.Single(ConsoleSystem.Caller),"This person is already in an organization.");
 							}
@@ -678,6 +699,29 @@ namespace Roleplay
 						
 							(ConsoleSystem.Caller.Pawn as Citizen).partydata = (((RoleplayGame)Game.Current).AllParties[pind].icon, ((RoleplayGame)Game.Current).AllParties[pind].color);
 								ci = (ConsoleSystem.Caller.Pawn as Citizen).interactingwith;
+								if (ci != null){
+								foreach(Confirmation c in ci.confirmations){
+
+
+
+
+								if (c.confirmtype == "partyinvite" && c.Sender == (ConsoleSystem.Caller.Pawn as Citizen)){
+									Citizen.Notify(To.Single(ConsoleSystem.Caller),"You have already invited this person.");
+									return;
+								}
+
+
+
+
+
+
+
+							}
+
+
+
+
+
 								if (ci.partydata.Item1 == partyicon.noparty){
 
 									
@@ -685,11 +729,14 @@ namespace Roleplay
 									
 									
 									functiontocall = () => TryJoinParty(((RoleplayGame)Game.Current).AllParties[pind], ci, inviter);
-									
-									ci.sendconfirmation("Would you like to join "+inviter.Name+"'s party?", functiontocall);
+									//ci.idlist.identify(inviter);
+									ci.sendconfirmation("Would you like to join "+inviter.Name+"'s party?", functiontocall, null, "partyinvite", inviter);
 									Citizen.Notify(To.Single(ConsoleSystem.Caller), "Party invite sent.", "success");
 								}else{
 									Citizen.Notify(To.Single(ConsoleSystem.Caller), "This person is already in a party.");
+								}
+								}else{
+									//no target found
 								}
 
 							}else{
@@ -738,18 +785,41 @@ namespace Roleplay
 						}
 						[ServerCmd]
 						public static void confirm(int confirmationid){
-							if ((ConsoleSystem.Caller.Pawn as Citizen).confirmations[confirmationid] != null){
-								(ConsoleSystem.Caller.Pawn as Citizen).confirmations[confirmationid].doconfirm();
-								(ConsoleSystem.Caller.Pawn as Citizen).confirmations[confirmationid] = null;
+							int ind = 0;
+							foreach(Confirmation c in (ConsoleSystem.Caller.Pawn as Citizen).confirmations){
+								
+								if (confirmationid == c.id){
+							
+							
+								c.doconfirm();
+								(ConsoleSystem.Caller.Pawn as Citizen).confirmations.RemoveAt(ind);
+							
+								
 								
 							     ((RoleplayGame)Current).removeconfirmation(To.Single(ConsoleSystem.Caller),confirmationid);
+								 return;
+							}
+							ind++;
 							}
 						}
 						[ServerCmd]
 						public static void deny(int confirmationid){
+																int ind = 0;
+							foreach(Confirmation c in (ConsoleSystem.Caller.Pawn as Citizen).confirmations){
+								
+								if (confirmationid == c.id){
 							
-							((RoleplayGame)Current).removeconfirmation(To.Single(ConsoleSystem.Caller),confirmationid);
-
+							
+								c.dodeny();
+								(ConsoleSystem.Caller.Pawn as Citizen).confirmations.RemoveAt(ind);
+							
+								
+								
+							     ((RoleplayGame)Current).removeconfirmation(To.Single(ConsoleSystem.Caller),confirmationid);
+								 return;
+							}
+							ind++;
+							}
 						}
 						[ServerCmd]
 						public static void party(string command, int characterid = -1){
