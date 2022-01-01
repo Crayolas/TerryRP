@@ -68,7 +68,9 @@ public class PartiesBase:Panel{
         if((Local.Pawn as Citizen).partydata.Item1 == partyicon.noparty ){
         foreach(KeyValuePair<Citizen, PlayerMarker> pm in markers){
             pm.Value.Delete();
+           
         }
+        markers.Clear();
         current = null;
         //party = null;
         Delete();
